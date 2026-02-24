@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+
+    body {
+      width: 220px;
+      padding: 18px;
+      background: #0a1628;
+      color: #e2e8f0;
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+    }
+
+    .logo-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .logo {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1a1a2e, #0f3460);
+      border: 1.5px solid rgba(110, 231, 183, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    h2 {
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    h2 span {
+      color: #6EE7B7;
+    }
+
+    .desc {
+      font-size: 11px;
+      color: #64748b;
+      font-family: 'JetBrains Mono', monospace;
+      line-height: 1.5;
+      margin-bottom: 14px;
+    }
+
+    .open-settings {
+      display: block;
+      width: 100%;
+      padding: 9px;
+      border-radius: 8px;
+      border: 1.5px solid rgba(110, 231, 183, 0.3);
+      background: rgba(110, 231, 183, 0.08);
+      color: #6EE7B7;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 12px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+    }
+
+    .open-settings:hover {
+      background: rgba(110, 231, 183, 0.14);
+      border-color: rgba(110, 231, 183, 0.6);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="logo-row">
+    <div class="logo">⚡</div>
+    <h2>Form<span>Dial</span></h2>
+  </div>
+  <p class="desc">Right-click any text input to open the radial fill dial.</p>
+  <button class="open-settings" id="openSettings">⚙ Edit Profiles</button>
+  <script>
+    document.getElementById('openSettings').addEventListener('click', () => {
+      chrome.runtime.openOptionsPage();
+    });
+  </script>
+</body>
+
+</html>
