@@ -3,7 +3,7 @@
   "name": "FormDial",
   "version": "1.0.0",
   "description": "Radial dial menu for filling form fields fast",
-  "permissions": ["storage", "contextMenus", "activeTab"],
+  "permissions": ["storage", "activeTab"],
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
