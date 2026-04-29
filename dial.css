@@ -1,0 +1,267 @@
+/* ── Full-page overlay root ── */
+#form-dial-root {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+  pointer-events: none;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+#form-dial-root.fd-open {
+  pointer-events: auto;
+}
+
+/* Backdrop */
+.fd-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0);
+  transition: background 0.25s ease;
+  pointer-events: none;
+}
+#form-dial-root.fd-open .fd-backdrop {
+  background: rgba(0, 0, 0, 0.18);
+  pointer-events: auto;
+  backdrop-filter: blur(1px);
+}
+
+/* ── Hub container ── */
+.fd-hub {
+  position: absolute;
+  width: 240px;
+  height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+/* ── Center orb ── */
+.fd-center {
+  position: absolute;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  border: 2px solid rgba(110, 231, 183, 0.6);
+  box-shadow:
+    0 0 0 4px rgba(110, 231, 183, 0.12),
+    0 0 20px rgba(110, 231, 183, 0.3),
+    0 4px 24px rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transform: scale(0);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: auto;
+}
+#form-dial-root.fd-open .fd-center {
+  transform: scale(1);
+}
+#form-dial-root.fd-closing .fd-center {
+  transform: scale(0);
+  transition: transform 0.2s ease-in;
+}
+
+.fd-logo {
+  font-size: 20px;
+  line-height: 1;
+  filter: drop-shadow(0 0 6px rgba(110, 231, 183, 0.8));
+}
+
+/* ── Petals ring ── */
+.fd-petals-ring {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
+
+/* ── Individual petal ── */
+.fd-petal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 46px;
+  height: 46px;
+  margin: -23px 0 0 -23px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #1e293b, #0f172a);
+  border: 1.5px solid rgba(148, 163, 184, 0.25);
+  color: #e2e8f0;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  transition:
+    transform  0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity    0.22s ease,
+    background 0.15s ease,
+    box-shadow 0.15s ease,
+    border-color 0.15s ease;
+  transition-delay: var(--delay, 0ms);
+  transform: translate(0, 0) scale(0);
+  opacity: 0;
+  pointer-events: none;
+  padding: 0;
+  outline: none;
+  -webkit-appearance: none;
+}
+
+#form-dial-root.fd-open .fd-petal {
+  transform: translate(var(--tx), var(--ty)) scale(1);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+#form-dial-root.fd-closing .fd-petal {
+  transform: translate(0, 0) scale(0) !important;
+  opacity: 0 !important;
+  transition: transform 0.18s ease-in, opacity 0.15s ease-in !important;
+  transition-delay: 0ms !important;
+}
+
+.fd-petal:hover {
+  background: linear-gradient(145deg, #6EE7B720, #3b82f620);
+  border-color: rgba(110, 231, 183, 0.6);
+  box-shadow: 0 0 0 2px rgba(110, 231, 183, 0.2), 0 4px 16px rgba(0, 0, 0, 0.5);
+  transform: translate(var(--tx), var(--ty)) scale(1.18) !important;
+}
+
+.fd-petal:active {
+  transform: translate(var(--tx), var(--ty)) scale(0.95) !important;
+}
+
+.fd-petal-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.fd-petal-label {
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: #94a3b8;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.fd-petal:hover .fd-petal-label {
+  color: #6EE7B7;
+}
+
+/* ── Profile tabs ── */
+.fd-profiles {
+  position: absolute;
+  bottom: -38px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  opacity: 0;
+  transition: opacity 0.25s ease 0.15s;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+#form-dial-root.fd-open .fd-profiles {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.fd-profile-tab {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  background: rgba(15, 23, 42, 0.9);
+  color: #94a3b8;
+  transition: all 0.15s ease;
+  outline: none;
+  -webkit-appearance: none;
+  backdrop-filter: blur(8px);
+}
+
+.fd-profile-tab:hover,
+.fd-profile-tab.active {
+  color: #fff;
+  border-color: var(--pcolor, #6EE7B7);
+  background: color-mix(in srgb, var(--pcolor, #6EE7B7) 15%, rgba(15, 23, 42, 0.95));
+  box-shadow: 0 0 10px color-mix(in srgb, var(--pcolor, #6EE7B7) 40%, transparent);
+}
+
+/* ── Close button ── */
+.fd-close {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(30, 41, 59, 0.95);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  color: #64748b;
+  font-size: 9px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0);
+  transition:
+    opacity    0.2s ease 0.2s,
+    transform  0.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s,
+    color      0.15s,
+    background 0.15s;
+  z-index: 20;
+  pointer-events: none;
+  outline: none;
+  -webkit-appearance: none;
+}
+
+#form-dial-root.fd-open .fd-close {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+.fd-close:hover {
+  color: #f87171;
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(248, 113, 113, 0.4);
+}
+
+/* ── Target hint ── */
+.fd-target-hint {
+  position: absolute;
+  top: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(110, 231, 183, 0.3);
+  border-radius: 8px;
+  padding: 3px 10px;
+  font-size: 10px;
+  color: #6EE7B7;
+  white-space: nowrap;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0;
+  transition: opacity 0.2s ease 0.25s;
+  pointer-events: none;
+  backdrop-filter: blur(8px);
+}
+
+#form-dial-root.fd-open .fd-target-hint {
+  opacity: 1;
+}
