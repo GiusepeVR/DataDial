@@ -5,10 +5,8 @@
   "description": "Radial dial menu for filling form fields fast",
   "permissions": ["storage", "activeTab", "identity"],
   "oauth2": {
-    "client_id": "YOUR_CHROME_OAUTH_CLIENT_ID.apps.googleusercontent.com",
-    "scopes": [
-      "https://www.googleapis.com/auth/userinfo.email"
-    ]
+    "client_id": "679462657321-a6nqqatr2qg2prprmuatjj73krsf1kff.apps.googleusercontent.com.apps.googleusercontent.com",
+    "scopes": ["https://www.googleapis.com/auth/userinfo.email"]
   },
   "host_permissions": [
     "https://firestore.googleapis.com/*",

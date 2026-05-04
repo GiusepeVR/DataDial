@@ -1,21 +1,26 @@
 // Firebase REST API client for Chrome Extension (no SDK needed)
 // Configure these values from your Firebase project console.
-const FIREBASE_CONFIG = {
-  apiKey: 'YOUR_FIREBASE_API_KEY',
-  projectId: 'YOUR_PROJECT_ID',
+const firebaseConfig = {
+  apiKey: 'AIzaSyAoi6GMCdnclsbQqlPDHTmrz3HL-mBZkP4',
+  authDomain: 'datadial-8267d.firebaseapp.com',
+  projectId: 'datadial-8267d',
+  storageBucket: 'datadial-8267d.firebasestorage.app',
+  messagingSenderId: '679462657321',
+  appId: '1:679462657321:web:0240d447bd272493a9eb38',
+  measurementId: 'G-KF2GKP8PTX',
 };
 
 const FIRESTORE_BASE = `https://firestore.googleapis.com/v1/projects/${FIREBASE_CONFIG.projectId}/databases/(default)/documents`;
 const AUTH_KEY = 'datadial_auth';
 
 const FirebaseRest = {
-
   // --- Auth ---
 
   async signIn() {
     const token = await new Promise((resolve, reject) => {
       chrome.identity.getAuthToken({ interactive: true }, (t) => {
-        if (chrome.runtime.lastError) return reject(new Error(chrome.runtime.lastError.message));
+        if (chrome.runtime.lastError)
+          return reject(new Error(chrome.runtime.lastError.message));
         resolve(t);
       });
     });
@@ -47,7 +52,9 @@ const FirebaseRest = {
       expiresAt: Date.now() + Number(data.expiresIn) * 1000,
     };
 
-    await new Promise((resolve) => chrome.storage.local.set({ [AUTH_KEY]: authState }, resolve));
+    await new Promise((resolve) =>
+      chrome.storage.local.set({ [AUTH_KEY]: authState }, resolve),
+    );
     return authState;
   },
 
@@ -64,12 +71,16 @@ const FirebaseRest = {
         });
       });
     }
-    await new Promise((resolve) => chrome.storage.local.remove(AUTH_KEY, resolve));
+    await new Promise((resolve) =>
+      chrome.storage.local.remove(AUTH_KEY, resolve),
+    );
   },
 
   async getAuthState() {
     return new Promise((resolve) => {
-      chrome.storage.local.get(AUTH_KEY, (data) => resolve(data[AUTH_KEY] || null));
+      chrome.storage.local.get(AUTH_KEY, (data) =>
+        resolve(data[AUTH_KEY] || null),
+      );
     });
   },
 
@@ -97,7 +108,9 @@ const FirebaseRest = {
     auth.idToken = data.id_token;
     auth.refreshToken = data.refresh_token;
     auth.expiresAt = Date.now() + Number(data.expires_in) * 1000;
-    await new Promise((resolve) => chrome.storage.local.set({ [AUTH_KEY]: auth }, resolve));
+    await new Promise((resolve) =>
+      chrome.storage.local.set({ [AUTH_KEY]: auth }, resolve),
+    );
     return auth.idToken;
   },
 
@@ -106,12 +119,19 @@ const FirebaseRest = {
   _toFirestoreValue(val) {
     if (val === null || val === undefined) return { nullValue: null };
     if (typeof val === 'string') return { stringValue: val };
-    if (typeof val === 'number') return Number.isInteger(val) ? { integerValue: String(val) } : { doubleValue: val };
+    if (typeof val === 'number')
+      return Number.isInteger(val)
+        ? { integerValue: String(val) }
+        : { doubleValue: val };
     if (typeof val === 'boolean') return { booleanValue: val };
-    if (Array.isArray(val)) return { arrayValue: { values: val.map((v) => this._toFirestoreValue(v)) } };
+    if (Array.isArray(val))
+      return {
+        arrayValue: { values: val.map((v) => this._toFirestoreValue(v)) },
+      };
     if (typeof val === 'object') {
       const fields = {};
-      for (const [k, v] of Object.entries(val)) fields[k] = this._toFirestoreValue(v);
+      for (const [k, v] of Object.entries(val))
+        fields[k] = this._toFirestoreValue(v);
       return { mapValue: { fields } };
     }
     return { stringValue: String(val) };
@@ -123,10 +143,14 @@ const FirebaseRest = {
     if ('doubleValue' in val) return val.doubleValue;
     if ('booleanValue' in val) return val.booleanValue;
     if ('nullValue' in val) return null;
-    if ('arrayValue' in val) return (val.arrayValue.values || []).map((v) => this._fromFirestoreValue(v));
+    if ('arrayValue' in val)
+      return (val.arrayValue.values || []).map((v) =>
+        this._fromFirestoreValue(v),
+      );
     if ('mapValue' in val) {
       const obj = {};
-      for (const [k, v] of Object.entries(val.mapValue.fields || {})) obj[k] = this._fromFirestoreValue(v);
+      for (const [k, v] of Object.entries(val.mapValue.fields || {}))
+        obj[k] = this._fromFirestoreValue(v);
       return obj;
     }
     return null;
@@ -148,7 +172,10 @@ const FirebaseRest = {
 
     const res = await fetch(docPath, {
       method: 'PATCH',
-      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify(body),
     });
 
