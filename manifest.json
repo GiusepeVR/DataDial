@@ -3,7 +3,18 @@
   "name": "FormDial",
   "version": "1.0.0",
   "description": "Radial dial menu for filling form fields fast",
-  "permissions": ["storage", "activeTab"],
+  "permissions": ["storage", "activeTab", "identity"],
+  "oauth2": {
+    "client_id": "YOUR_CHROME_OAUTH_CLIENT_ID.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/userinfo.email"
+    ]
+  },
+  "host_permissions": [
+    "https://firestore.googleapis.com/*",
+    "https://identitytoolkit.googleapis.com/*",
+    "https://securetoken.googleapis.com/*"
+  ],
   "content_scripts": [
     {
       "matches": ["<all_urls>"],

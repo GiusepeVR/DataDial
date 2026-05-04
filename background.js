@@ -1,3 +1,5 @@
+importScripts('firebase-rest.js', 'storage-layer.js');
+
 const DEFAULT_PROFILES = [
   {
     id: 'personal',
@@ -54,9 +56,46 @@ chrome.runtime.onInstalled.addListener(() => {
   seedDefaults();
 });
 
+chrome.runtime.onStartup.addListener(async () => {
+  const auth = await FirebaseRest.getAuthState();
+  if (auth) {
+    StorageLayer.pullFromCloud().catch(() => {});
+  }
+});
+
 chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
   if (msg.type === 'ensureDefaults') {
     seedDefaults(sendResponse);
-    return true; // keep channel open for async response
+    return true;
+  }
+
+  if (msg.type === 'signIn') {
+    (async () => {
+      const auth = await FirebaseRest.signIn();
+      const migration = await StorageLayer.migrateOnFirstSignIn();
+      sendResponse({ auth, migration });
+    })().catch((err) => sendResponse({ error: err.message }));
+    return true;
+  }
+
+  if (msg.type === 'signOut') {
+    FirebaseRest.signOut()
+      .then(() => sendResponse({ ok: true }))
+      .catch((err) => sendResponse({ error: err.message }));
+    return true;
+  }
+
+  if (msg.type === 'getAuthState') {
+    StorageLayer.getSyncStatus()
+      .then((status) => sendResponse(status))
+      .catch(() => sendResponse({ signedIn: false }));
+    return true;
+  }
+
+  if (msg.type === 'syncNow') {
+    StorageLayer.pushToCloud()
+      .then((ok) => sendResponse({ ok }))
+      .catch((err) => sendResponse({ error: err.message }));
+    return true;
   }
 });

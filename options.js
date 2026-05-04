@@ -115,16 +115,82 @@ function collectCurrentProfile() {
 
 document.getElementById('saveBtn').addEventListener('click', () => {
   collectCurrentProfile();
-  chrome.storage.local.set({ profiles, activeProfile: activeProfileId }, () => {
+  StorageLayer.saveProfiles(profiles, activeProfileId).then(() => {
     const status = document.getElementById('status');
+    status.textContent = '✓ Saved!';
     status.classList.add('visible');
     setTimeout(() => status.classList.remove('visible'), 2000);
   });
 });
 
-chrome.storage.local.get(['profiles', 'activeProfile'], (data) => {
-  profiles        = data.profiles     || [];
-  activeProfileId = data.activeProfile || (profiles[0] && profiles[0].id) || '';
+// --- Auth UI ---
+
+function renderAuthSection(status) {
+  const section = document.getElementById('authSection');
+  if (status.signedIn) {
+    const ago = status.lastSyncedAt
+      ? timeAgo(status.lastSyncedAt)
+      : 'never';
+    section.innerHTML = `
+      <div class="user-info">
+        ${status.photoUrl ? `<img class="user-avatar" src="${status.photoUrl}" alt="" />` : ''}
+        <div>
+          <div class="user-email">${escapeHtml(status.email)}</div>
+          <div class="sync-status">Last synced: ${ago}</div>
+        </div>
+      </div>
+      <button class="sync-btn" id="syncNowBtn">Sync Now</button>
+      <button class="sign-out-btn" id="signOutBtn">Sign Out</button>
+    `;
+    document.getElementById('syncNowBtn').addEventListener('click', () => {
+      collectCurrentProfile();
+      StorageLayer.pushToCloud().then(() => refreshAuthUI());
+    });
+    document.getElementById('signOutBtn').addEventListener('click', () => {
+      chrome.runtime.sendMessage({ type: 'signOut' }, () => refreshAuthUI());
+    });
+  } else {
+    section.innerHTML = `
+      <button class="google-btn" id="googleSignInBtn">Sign in with Google</button>
+      <span class="sync-status">Sync profiles across devices</span>
+    `;
+    document.getElementById('googleSignInBtn').addEventListener('click', () => {
+      chrome.runtime.sendMessage({ type: 'signIn' }, (res) => {
+        if (res && !res.error) {
+          StorageLayer.getProfiles().then((data) => {
+            profiles = data.profiles;
+            activeProfileId = data.activeProfileId || (profiles[0] && profiles[0].id) || '';
+            renderTabs();
+            renderPanel();
+          });
+        }
+        refreshAuthUI();
+      });
+    });
+  }
+}
+
+function refreshAuthUI() {
+  chrome.runtime.sendMessage({ type: 'getAuthState' }, (status) => {
+    renderAuthSection(status || { signedIn: false });
+  });
+}
+
+function timeAgo(ts) {
+  const diff = Math.floor((Date.now() - ts) / 1000);
+  if (diff < 60) return 'just now';
+  if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+  if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+  return Math.floor(diff / 86400) + 'd ago';
+}
+
+// --- Init ---
+
+StorageLayer.getProfiles().then((data) => {
+  profiles        = data.profiles;
+  activeProfileId = data.activeProfileId || (profiles[0] && profiles[0].id) || '';
   renderTabs();
   renderPanel();
 });
+
+refreshAuthUI();
